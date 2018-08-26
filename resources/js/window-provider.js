@@ -14,9 +14,6 @@
  *  limitations under the License.
  */
 
-// Add a command line arg to see if the user wants to hide the gui on first launch
-let noGui = process.argv.indexOf("--no-gui") > -1;
-
  (function() {
   const { BrowserWindow, BrowserView, ipcMain, app } = require('electron')
 
@@ -29,6 +26,7 @@ let noGui = process.argv.indexOf("--no-gui") > -1;
   let mainWindow = null
   let replyWindow = null
   let browserView = null
+  let hideOnStartup = preferences.hideOnStartup();
 
   var createMainWindow = () => {
     var mainWindowState, mainWindow, bounds
@@ -37,13 +35,13 @@ let noGui = process.argv.indexOf("--no-gui") > -1;
       mainWindowState = windowStateKeeper( { defaultWidth: 1000, defaultHeight: 750 } )
       bounds = {
         title: "Pulse SMS", icon: path.join(__dirname, '../../build/icon.png'),
-        show: !noGui, x: mainWindowState.x, y: mainWindowState.y,
+        show: !hideOnStartup, x: mainWindowState.x, y: mainWindowState.y,
         width: mainWindowState.width, height: mainWindowState.height,
       }
     } catch (err) {
       bounds = {
         title: "Pulse SMS", icon: path.join(__dirname, '../../build/icon.png'),
-        show: !noGui, x: 0, y: 0,
+        show: !hideOnStartup, x: 0, y: 0,
         width: 1000, height: 750,
       }
     }
@@ -51,9 +49,9 @@ let noGui = process.argv.indexOf("--no-gui") > -1;
     mainWindow = new BrowserWindow(bounds)
 
     // always re-enable showing the GUI after first launch
-    if (noGui) {
-      noGui = false;
-    }
+    // if (hideOnStartup) {
+    //   preferences.toggleHideOnStartup()
+    // }
 
     if (app.getLocale().indexOf("en") >= 0 && preferences.useSpellcheck()) {
       browserView = new BrowserView( { webPreferences: { nodeIntegration: false, preload: path.join(__dirname, 'spellcheck-preparer.js') } } )

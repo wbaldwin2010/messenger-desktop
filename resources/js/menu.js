@@ -194,6 +194,17 @@
       })
     }
 
+    template[0].submenu.push({
+      label: 'Minimize on Start Up',
+      type: 'checkbox',
+      checked: preferences.hideOnStartup(),
+      click() {
+        let hideOnStartup = !preferences.hideOnStartup()
+        preferences.toggleHideOnStartup()
+        app.setLoginItemSettings({ openAsHidden: hideOnStartup })
+      }
+    })
+
     if (process.platform === 'darwin') {
       const name = require('electron').app.getName()
       template.unshift({

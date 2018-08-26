@@ -58,9 +58,16 @@
 
   // Boolean Preference: Default to FALSE
   const AUTO_HIDE_MENU_BAR = 'auto-hide-menu-bar'
+  const HIDE_ON_STARTUP = 'hide-on-startup'
 
   var shouldAutoHideMenuBar = () => {
     return settings.has(AUTO_HIDE_MENU_BAR) && settings.get(AUTO_HIDE_MENU_BAR) === "true"
+  }
+
+  // Defaults to false but is overridden by command line argument
+  var shouldHideOnStartup = () => {
+    return (!settings.has(HIDE_ON_STARTUP) && settings.get(HIDE_ON_STARTUP) === 'true')
+      || process.argv.indexOf("--no-gui") > -1; // Add a command line arg to see if the user wants to hide the gui on first launch
   }
 
   // Boolean Preference: Default to TRUE
@@ -107,7 +114,7 @@
 
   // Modifier
   function togglePreference(id, getter) {
-    settings.set(id, !getter() + "")
+    settings.set(id, !getter().toString())
   }
 
   module.exports.isSnoozeActive = isSnoozeActive
@@ -115,6 +122,7 @@
   module.exports.snooze = snooze
 
   module.exports.autoHideMenuBar = shouldAutoHideMenuBar
+  module.exports.hideOnStartup = shouldHideOnStartup
   module.exports.showNotifications = shouldShowNotifications
   module.exports.notificationSounds = shouldPlayNotificationSounds
   module.exports.notificationSenderPreviews = shouldDisplayNotificationSenderPreviews
@@ -125,6 +133,7 @@
   module.exports.minimizeToTray = shouldMinimizeToTray
 
   module.exports.toggleAutoHideMenuBar = () => { togglePreference(AUTO_HIDE_MENU_BAR, shouldAutoHideMenuBar) }
+  module.exports.toggleHideOnStartup = () => { togglePreference(HIDE_ON_STARTUP, shouldHideOnStartup) }
   module.exports.toggleShowNotifications = () => { togglePreference(SHOW_NOTIFICATIONS, shouldShowNotifications) }
   module.exports.toggleNotificationSounds = () => { togglePreference(NOTIFICATION_SOUNDS, shouldPlayNotificationSounds) }
   module.exports.toggleNotificationSenderPreviews = () => { togglePreference(NOTIFICATION_SENDER_PREVIEWS, shouldDisplayNotificationSenderPreviews) }
